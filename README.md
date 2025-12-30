@@ -82,9 +82,9 @@ export const heroContent = {
 
 This project was developed by the following team as part of a graduation thesis:
 
-- **[Name Surname]** - Full Stack Developer
-- **[Name Surname]** - Mobile Developer
-- **[Name Surname]** - UI/UX Designer
+- **Yunus Mert Kok** - Full Stack Developer
+- **Yusuf Ad** - Mobile Developer
+- **Osman Ileri** - UI/UX Designer
 
 ## 📄 License
 
