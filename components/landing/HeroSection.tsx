@@ -5,19 +5,31 @@ import { Image } from 'expo-image';
 import React, { useEffect } from 'react';
 import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
+    Easing,
+    interpolate,
+    SharedValue,
     useAnimatedStyle,
     useSharedValue,
     withDelay,
+    withRepeat,
+    withSequence,
     withSpring,
-    withTiming
+    withTiming,
 } from 'react-native-reanimated';
 import { StoreButton } from './StoreButton';
 
-export function HeroSection() {
+interface HeroSectionProps {
+  scrollY?: SharedValue<number>;
+}
+
+export function HeroSection({ scrollY }: HeroSectionProps) {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
   const { width } = useWindowDimensions();
   const isDesktop = width >= 768;
+  
+  const localScrollY = useSharedValue(0);
+  const activeScrollY = scrollY ?? localScrollY;
 
   // Entry animations
   const badgeOpacity = useSharedValue(0);
@@ -32,8 +44,12 @@ export function HeroSection() {
   const phoneOpacity = useSharedValue(0);
   const phoneRotate = useSharedValue(-5);
 
+  // Decor circle animations
+  const decor1Scale = useSharedValue(1);
+  const decor2Scale = useSharedValue(1);
+
   useEffect(() => {
-    // Staggered entry animations
+    // ... existing entry animations ...
     badgeOpacity.value = withDelay(100, withTiming(1, { duration: 600 }));
     badgeTranslateY.value = withDelay(100, withSpring(0, { damping: 15 }));
 
@@ -50,7 +66,27 @@ export function HeroSection() {
     phoneOpacity.value = withDelay(300, withTiming(1, { duration: 800 }));
     phoneScale.value = withDelay(300, withSpring(1, { damping: 12, stiffness: 100 }));
     phoneRotate.value = withDelay(300, withSpring(0, { damping: 12, stiffness: 100 }));
+
+    // Continuous breathing animation for decor circles
+    decor1Scale.value = withRepeat(
+      withSequence(
+        withTiming(1.2, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 4000, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      true
+    );
+    decor2Scale.value = withRepeat(
+      withSequence(
+        withTiming(1.1, { duration: 5000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 5000, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      true
+    );
   }, []);
+
+  // ... existing style definitions ...
 
   const badgeStyle = useAnimatedStyle(() => ({
     opacity: badgeOpacity.value,
@@ -75,17 +111,48 @@ export function HeroSection() {
     opacity: statsOpacity.value,
   }));
 
-  const phoneStyle = useAnimatedStyle(() => ({
-    opacity: phoneOpacity.value,
-    transform: [
-      { scale: phoneScale.value },
-      { rotate: `${phoneRotate.value}deg` },
-    ],
-  }));
+  const phoneStyle = useAnimatedStyle(() => {
+    // Subtle, professional parallax effect
+    const translateY = interpolate(activeScrollY.value, [0, 800], [0, 60]); // Gentle movement
+    const rotate = interpolate(activeScrollY.value, [0, 800], [0, 3]); // Very subtle rotation
+    const scale = interpolate(activeScrollY.value, [0, 800], [1, 0.95]); // Slight shrink as it moves away
+    const opacity = interpolate(activeScrollY.value, [0, 600], [1, 0.85]); // Fade slightly
+    
+    return {
+      opacity: phoneOpacity.value * opacity,
+      transform: [
+        { scale: phoneScale.value },
+        { scale: scale },
+        { rotate: `${phoneRotate.value + rotate}deg` },
+        { translateY: translateY },
+      ],
+    };
+  });
+
+  const decor1Style = useAnimatedStyle(() => {
+    const parallaxY = interpolate(activeScrollY.value, [0, 600], [0, -50]); // Moves up slightly
+    return {
+      transform: [
+        { scale: decor1Scale.value },
+        { translateY: parallaxY },
+      ],
+    };
+  });
+
+  const decor2Style = useAnimatedStyle(() => {
+    const parallaxY = interpolate(activeScrollY.value, [0, 600], [0, 30]); // Moves down slightly
+    return {
+      transform: [
+        { scale: decor2Scale.value },
+        { translateY: parallaxY },
+      ],
+    };
+  });
 
   return (
     <View
       id="hero"
+      // ... same as before
       style={[
         styles.hero,
         {
@@ -97,8 +164,9 @@ export function HeroSection() {
       <View style={[styles.container, isDesktop && styles.containerDesktop]}>
         {/* Text Content */}
         <View style={[styles.textContent, isDesktop && styles.textContentDesktop]}>
+             {/* ... same text content ... */}
           <Animated.Text style={[styles.badge, { backgroundColor: colors.surfaceAlt, color: colors.primary }, badgeStyle]}>
-            🚀 Yeni Nesil Beslenme Uygulaması
+            🚀 Next Generation Nutrition App
           </Animated.Text>
           
           <Animated.Text style={[styles.title, { color: colors.text }, titleStyle]}>
@@ -115,26 +183,28 @@ export function HeroSection() {
           </Animated.View>
 
           <Animated.View style={[styles.stats, statsStyle]}>
+            {/* ... stats ... */}
             <View style={styles.statItem}>
               <Text style={[styles.statNumber, { color: colors.primary }]}>10K+</Text>
-              <Text style={[styles.statLabel, { color: colors.muted }]}>Kullanıcı</Text>
+              <Text style={[styles.statLabel, { color: colors.muted }]}>Users</Text>
             </View>
             <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
               <Text style={[styles.statNumber, { color: colors.primary }]}>500+</Text>
-              <Text style={[styles.statLabel, { color: colors.muted }]}>Tarif</Text>
+              <Text style={[styles.statLabel, { color: colors.muted }]}>Recipes</Text>
             </View>
             <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
               <Text style={[styles.statNumber, { color: colors.primary }]}>4.9</Text>
-              <Text style={[styles.statLabel, { color: colors.muted }]}>Puan</Text>
+              <Text style={[styles.statLabel, { color: colors.muted }]}>Rating</Text>
             </View>
           </Animated.View>
         </View>
 
         {/* Hero Image/Video */}
-        <Animated.View style={[styles.mediaContainer, isDesktop && styles.mediaContainerDesktop, phoneStyle]}>
-          <View style={[styles.phoneFrame, { backgroundColor: colors.cardBg, borderColor: colors.border }]}>
+        {/* Moved phoneStyle from here to the View inside */}
+        <View style={[styles.mediaContainer, isDesktop && styles.mediaContainerDesktop]}>
+          <Animated.View style={[styles.phoneFrame, { backgroundColor: colors.cardBg, borderColor: colors.border }, phoneStyle]}>
             {heroContent.heroMediaType === 'video' ? (
               <View style={styles.videoContainer}>
                 {Platform.OS === 'web' ? (
@@ -162,12 +232,12 @@ export function HeroSection() {
                 contentFit="cover"
               />
             )}
-          </View>
+          </Animated.View>
           
-          {/* Decorative elements */}
-          <View style={[styles.decorCircle1, { backgroundColor: colors.primary, opacity: 0.15 }]} />
-          <View style={[styles.decorCircle2, { backgroundColor: colors.secondary, opacity: 0.1 }]} />
-        </Animated.View>
+          {/* Decorative elements - Now Animated and independent */}
+          <Animated.View style={[styles.decorCircle1, { backgroundColor: colors.primary, opacity: 0.15 }, decor1Style]} />
+          <Animated.View style={[styles.decorCircle2, { backgroundColor: colors.secondary, opacity: 0.1 }, decor2Style]} />
+        </View>
       </View>
     </View>
   );

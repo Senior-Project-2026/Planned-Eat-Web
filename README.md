@@ -82,8 +82,8 @@ export const heroContent = {
 
 This project was developed by the following team as part of a graduation thesis:
 
-- **Yunus Mert Kok** - Full Stack Developer
-- **Yusuf Ad** - Mobile Developer
+- **Yusuf Ad** - Full Stack Developer
+- **Yunus Mert Kok** - Mobile Developer
 - **Osman Ileri** - UI/UX Designer
 
 ## 📄 License

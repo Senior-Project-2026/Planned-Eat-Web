@@ -4,17 +4,17 @@ import { Image } from 'expo-image';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withTiming,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
 } from 'react-native-reanimated';
 import { SocialButton } from './SocialButton';
 
 interface TeamMemberCardProps {
   name: string;
   role: string;
-  avatar: string;
+  avatar: any; // Allow string or require
   linkedIn: string;
   github: string;
 }
@@ -31,19 +31,19 @@ export function TeamMemberCard({ name, role, avatar, linkedIn, github }: TeamMem
   const lineWidth = useSharedValue(0);
 
   const handleHoverIn = () => {
-    translateY.value = withSpring(-10, { damping: 15, stiffness: 300 });
-    scale.value = withSpring(1.02, { damping: 15, stiffness: 300 });
-    shadowOpacity.value = withTiming(0.2, { duration: 200 });
-    avatarScale.value = withSpring(1.05, { damping: 10, stiffness: 400 });
-    lineWidth.value = withSpring(100, { damping: 15, stiffness: 200 });
+    translateY.value = withTiming(-3, { duration: 250, easing: Easing.out(Easing.ease) });
+    scale.value = withTiming(1, { duration: 250 });
+    shadowOpacity.value = withTiming(0.15, { duration: 250 });
+    avatarScale.value = withTiming(1.02, { duration: 250, easing: Easing.out(Easing.ease) });
+    lineWidth.value = withTiming(100, { duration: 300, easing: Easing.out(Easing.ease) });
   };
 
   const handleHoverOut = () => {
-    translateY.value = withSpring(0, { damping: 15, stiffness: 300 });
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-    shadowOpacity.value = withTiming(0.08, { duration: 200 });
-    avatarScale.value = withSpring(1, { damping: 10, stiffness: 400 });
-    lineWidth.value = withSpring(0, { damping: 15, stiffness: 200 });
+    translateY.value = withTiming(0, { duration: 250, easing: Easing.out(Easing.ease) });
+    scale.value = withTiming(1, { duration: 250 });
+    shadowOpacity.value = withTiming(0.08, { duration: 250 });
+    avatarScale.value = withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) });
+    lineWidth.value = withTiming(0, { duration: 250 });
   };
 
   const animatedCardStyle = useAnimatedStyle(() => ({
@@ -61,6 +61,8 @@ export function TeamMemberCard({ name, role, avatar, linkedIn, github }: TeamMem
   const animatedLineStyle = useAnimatedStyle(() => ({
     width: `${lineWidth.value}%`,
   }));
+
+  const imageSource = typeof avatar === 'string' ? { uri: avatar } : avatar;
 
   return (
     <Pressable
@@ -104,7 +106,7 @@ export function TeamMemberCard({ name, role, avatar, linkedIn, github }: TeamMem
           ]}
         >
           <Image
-            source={{ uri: avatar }}
+            source={imageSource}
             style={styles.avatar}
             contentFit="cover"
           />
@@ -127,8 +129,8 @@ export function TeamMemberCard({ name, role, avatar, linkedIn, github }: TeamMem
 const styles = StyleSheet.create({
   card: {
     padding: 32,
-    paddingTop: 36,
-    borderRadius: 24,
+    paddingTop: 40,
+    borderRadius: 32, // Priot.io style
     borderWidth: 1,
     alignItems: 'center',
     position: 'relative',

@@ -1,5 +1,6 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
@@ -58,7 +59,7 @@ export function StoreButton({ type, url }: StoreButtonProps) {
   }));
 
   const isApple = type === 'apple';
-  const bgColor = colorScheme === 'dark' ? '#FFFFFF' : '#000000';
+  const bgColor = colorScheme === 'dark' ? '#FFFFFF' : '#171717';
   const textColor = colorScheme === 'dark' ? '#000000' : '#FFFFFF';
 
   return (
@@ -76,7 +77,7 @@ export function StoreButton({ type, url }: StoreButtonProps) {
           styles.button,
           {
             backgroundColor: bgColor,
-            shadowColor: '#000',
+            shadowColor: bgColor,
             shadowOffset: { width: 0, height: 8 },
             shadowRadius: 20,
             elevation: 8,
@@ -85,15 +86,17 @@ export function StoreButton({ type, url }: StoreButtonProps) {
         ]}
       >
         <View style={styles.content}>
-          <Text style={[styles.icon, { color: textColor }]}>
-            {isApple ? '🍎' : '▶️'}
-          </Text>
+          <Ionicons 
+            name={isApple ? "logo-apple" : "logo-google-playstore"} 
+            size={28} 
+            color={textColor} 
+          />
           <View style={styles.textContainer}>
             <Text style={[styles.subtitle, { color: textColor }]}>
-              {isApple ? "App Store'dan" : "Google Play'de"}
+              {isApple ? "Download on the" : "GET IT ON"}
             </Text>
             <Text style={[styles.title, { color: textColor }]}>
-              {isApple ? 'İndir' : 'Keşfet'}
+              {isApple ? "App Store" : "Google Play"}
             </Text>
           </View>
         </View>

@@ -23,13 +23,13 @@ export function FeaturesSection() {
         <ScrollReveal delay={0} translateY={30}>
           <View style={styles.header}>
             <Text style={[styles.badge, { backgroundColor: colors.surface, color: colors.primary }]}>
-              ⚡ Özellikler
+              ⚡ Features
             </Text>
             <Text style={[styles.title, { color: colors.text }]}>
-              Sağlıklı Yaşamın Anahtarı
+              Key to Healthy Living
             </Text>
             <Text style={[styles.subtitle, { color: colors.muted }]}>
-              Planned-Eat ile beslenme alışkanlıklarınızı dönüştürün ve hedeflerinize ulaşın.
+              Transform your eating habits and reach your goals with Planned-Eat.
             </Text>
           </View>
         </ScrollReveal>
@@ -97,14 +97,17 @@ const styles = StyleSheet.create({
   },
   grid: {
     flexDirection: 'column',
-    gap: 20,
+    gap: 24, // Increased gap slightly
+    alignItems: 'center', // Center cards on mobile
   },
   gridTablet: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'center', // Center cards on tablet
   },
   gridDesktop: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'center', // Center cards on desktop
   },
 });

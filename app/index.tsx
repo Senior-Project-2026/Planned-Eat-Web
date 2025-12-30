@@ -5,6 +5,7 @@ import {
     Header,
     HeroSection,
     MediaGallerySection,
+    SectionTransition,
     TeamSection,
 } from '@/components/landing';
 import { Colors } from '@/constants/theme';
@@ -32,7 +33,7 @@ export default function LandingPage() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Animated Background Blobs */}
-      <AnimatedBackground />
+      <AnimatedBackground scrollY={scrollY} />
       
       {/* Fixed Header with scroll-aware glassmorphism */}
       <Header scrollY={scrollY} />
@@ -45,11 +46,23 @@ export default function LandingPage() {
         onScroll={scrollHandler}
         scrollEventThrottle={16}
       >
-        <HeroSection />
-        <FeaturesSection />
-        <MediaGallerySection />
-        <TeamSection />
-        <Footer />
+        <HeroSection scrollY={scrollY} />
+        
+        <SectionTransition variant="fade-scale">
+          <FeaturesSection />
+        </SectionTransition>
+        
+        <SectionTransition variant="fade-up">
+          <MediaGallerySection />
+        </SectionTransition>
+        
+        <SectionTransition variant="zoom-fade">
+          <TeamSection />
+        </SectionTransition>
+        
+        <SectionTransition variant="fade-up">
+          <Footer />
+        </SectionTransition>
       </Animated.ScrollView>
     </View>
   );

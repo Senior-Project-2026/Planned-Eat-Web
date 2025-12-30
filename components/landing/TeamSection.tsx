@@ -23,13 +23,13 @@ export function TeamSection() {
         <ScrollReveal delay={0} translateY={30}>
           <View style={styles.header}>
             <Text style={[styles.badge, { backgroundColor: colors.surface, color: colors.primary }]}>
-              👥 Takım
+              👥 The Team
             </Text>
             <Text style={[styles.title, { color: colors.text }]}>
-              Ekiple Tanışın
+              Meet the Crew
             </Text>
             <Text style={[styles.subtitle, { color: colors.muted }]}>
-              Bu projeyi hayata geçiren tutkulu geliştirici ekibimiz.
+              The passionate development team bringing this project to life.
             </Text>
           </View>
         </ScrollReveal>

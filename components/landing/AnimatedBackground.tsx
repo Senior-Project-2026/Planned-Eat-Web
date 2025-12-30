@@ -4,6 +4,8 @@ import React, { useEffect } from 'react';
 import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, {
     Easing,
+    interpolate,
+    SharedValue,
     useAnimatedStyle,
     useSharedValue,
     withRepeat,
@@ -11,10 +13,18 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 
-export function AnimatedBackground() {
+interface AnimatedBackgroundProps {
+  scrollY?: SharedValue<number>;
+}
+
+export function AnimatedBackground({ scrollY }: AnimatedBackgroundProps) {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
   const { width, height } = useWindowDimensions();
+  
+  // Use a local shared value if not provided
+  const localScrollY = useSharedValue(0);
+  const activeScrollY = scrollY ?? localScrollY;
 
   // Blob animation values
   const blob1X = useSharedValue(0);
@@ -84,33 +94,62 @@ export function AnimatedBackground() {
     );
   }, []);
 
-  const blob1Style = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: blob1X.value },
-      { translateY: blob1Y.value },
-    ],
-  }));
+  const blob1Style = useAnimatedStyle(() => {
+    const parallaxY = interpolate(activeScrollY.value, [0, height], [0, height * 0.2]);
+    return {
+      transform: [
+        { translateX: blob1X.value },
+        { translateY: blob1Y.value + parallaxY },
+      ],
+    };
+  });
 
-  const blob2Style = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: blob2X.value },
-      { translateY: blob2Y.value },
-    ],
-  }));
+  const blob2Style = useAnimatedStyle(() => {
+    const parallaxY = interpolate(activeScrollY.value, [0, height], [0, -height * 0.1]);
+    return {
+      transform: [
+        { translateX: blob2X.value },
+        { translateY: blob2Y.value + parallaxY },
+      ],
+    };
+  });
 
-  const blob3Style = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: blob3X.value },
-      { translateY: blob3Y.value },
-    ],
-  }));
+  const blob3Style = useAnimatedStyle(() => {
+    const parallaxY = interpolate(activeScrollY.value, [0, height], [0, height * 0.15]);
+    return {
+      transform: [
+        { translateX: blob3X.value },
+        { translateY: blob3Y.value + parallaxY },
+      ],
+    };
+  });
 
-  const primaryColor = colorScheme === 'dark' ? 'rgba(34, 197, 94, 0.08)' : 'rgba(34, 197, 94, 0.15)';
-  const secondaryColor = colorScheme === 'dark' ? 'rgba(16, 185, 129, 0.06)' : 'rgba(16, 185, 129, 0.12)';
-  const accentColor = colorScheme === 'dark' ? 'rgba(5, 150, 105, 0.05)' : 'rgba(5, 150, 105, 0.10)';
+  const primaryColor = colorScheme === 'dark' ? 'rgba(74, 222, 128, 0.08)' : 'rgba(34, 197, 94, 0.15)';
+  const secondaryColor = colorScheme === 'dark' ? 'rgba(52, 211, 153, 0.06)' : 'rgba(16, 185, 129, 0.12)';
+  const accentColor = colorScheme === 'dark' ? 'rgba(16, 185, 129, 0.05)' : 'rgba(5, 150, 105, 0.10)';
+
+  // Priot.io style lateral glow colors
+  const leftGlow = colorScheme === 'dark' ? 'rgba(59, 130, 246, 0.20)' : 'rgba(59, 130, 246, 0.08)';
+  const rightGlow = colorScheme === 'dark' ? 'rgba(20, 184, 166, 0.18)' : 'rgba(20, 184, 166, 0.06)';
 
   return (
     <View style={styles.container} pointerEvents="none">
+      {/* Lateral Glows - Priot.io style */}
+      <View 
+        style={[
+          styles.lateralGlow, 
+          styles.leftGlow,
+          { backgroundColor: leftGlow }
+        ]} 
+      />
+      <View 
+        style={[
+          styles.lateralGlow, 
+          styles.rightGlow,
+          { backgroundColor: rightGlow }
+        ]} 
+      />
+
       {/* Blob 1 - Top Right */}
       <Animated.View
         style={[
@@ -168,6 +207,22 @@ const styles = StyleSheet.create({
     bottom: 0,
     overflow: 'hidden',
     zIndex: -1,
+  },
+  lateralGlow: {
+    position: 'absolute',
+    width: '40%',
+    height: '100%',
+    ...(Platform.OS === 'web' && {
+      filter: 'blur(150px)',
+    }),
+  },
+  leftGlow: {
+    left: '-15%',
+    top: 0,
+  },
+  rightGlow: {
+    right: '-15%',
+    top: 0,
   },
   blob: {
     position: 'absolute',

@@ -5,10 +5,10 @@ import { Image } from 'expo-image';
 import React from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
+    Easing,
     useAnimatedStyle,
     useSharedValue,
-    withSpring,
-    withTiming,
+    withTiming
 } from 'react-native-reanimated';
 import { ScrollReveal } from './ScrollReveal';
 
@@ -28,13 +28,13 @@ export function MediaGallerySection() {
         <ScrollReveal delay={0} translateY={30}>
           <View style={styles.header}>
             <Text style={[styles.badge, { backgroundColor: colors.cardBg, color: colors.primary }]}>
-              📱 Uygulama
+              📱 The App
             </Text>
             <Text style={[styles.title, { color: colors.text }]}>
               {mediaGallery.sectionTitle}
             </Text>
             <Text style={[styles.subtitle, { color: colors.muted }]}>
-              Planned-Eat'in sunduğu özellikleri yakından inceleyin.
+              Explore the features Planned-Eat offers up close.
             </Text>
           </View>
         </ScrollReveal>
@@ -57,7 +57,7 @@ export function MediaGallerySection() {
             ) : (
               <View style={[styles.videoPlaceholder, { backgroundColor: colors.surfaceAlt }]}>
                 <Text style={{ color: colors.muted, fontSize: 48 }}>▶️</Text>
-                <Text style={{ color: colors.muted, marginTop: 12 }}>Tanıtım Videosu</Text>
+                <Text style={{ color: colors.muted, marginTop: 12 }}>Promo Video</Text>
               </View>
             )}
           </View>
@@ -67,7 +67,7 @@ export function MediaGallerySection() {
         <ScrollReveal delay={200} translateY={40}>
           <View style={styles.gallerySection}>
             <Text style={[styles.galleryTitle, { color: colors.text }]}>
-              Ekran Görüntüleri
+              Screenshots
             </Text>
             
             <ScrollView
@@ -99,15 +99,15 @@ function ScreenshotCard({ url, alt, colors, delay }: { url: string; alt: string;
   const shadowOpacity = useSharedValue(0.08);
 
   const handleHoverIn = () => {
-    translateY.value = withSpring(-8, { damping: 15, stiffness: 300 });
-    scale.value = withSpring(1.03, { damping: 15, stiffness: 300 });
-    shadowOpacity.value = withTiming(0.2, { duration: 200 });
+    translateY.value = withTiming(-4, { duration: 250, easing: Easing.out(Easing.ease) });
+    scale.value = withTiming(1.01, { duration: 250, easing: Easing.out(Easing.ease) });
+    shadowOpacity.value = withTiming(0.2, { duration: 250 });
   };
 
   const handleHoverOut = () => {
-    translateY.value = withSpring(0, { damping: 15, stiffness: 300 });
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-    shadowOpacity.value = withTiming(0.08, { duration: 200 });
+    translateY.value = withTiming(0, { duration: 250, easing: Easing.out(Easing.ease) });
+    scale.value = withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) });
+    shadowOpacity.value = withTiming(0.08, { duration: 250 });
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 900,
     aspectRatio: 16 / 9,
-    marginHorizontal: 'auto',
+    alignSelf: 'center', // Ensure centering
     borderRadius: 24,
     borderWidth: 1,
     overflow: 'hidden',
@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
   },
   gallerySection: {
     marginTop: 32,
+    alignItems: 'center', // Center children
   },
   galleryTitle: {
     fontSize: 28,
@@ -221,6 +222,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 8,
     gap: 24,
+    flexGrow: 1,
+    justifyContent: 'center', // Center items if they don't overflow
   },
   screenshotContainer: {
     borderRadius: 24,

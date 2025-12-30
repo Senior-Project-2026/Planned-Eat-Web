@@ -1,115 +1,114 @@
 /**
  * Planned-Eat Landing Page Data
  * 
- * Bu dosya, landing page'de kullanılan tüm dinamik içerikleri içerir.
- * Video linkleri, fotoğraflar ve ekip üyelerinin sosyal medya bilgilerini
- * buradan güncelleyebilirsiniz.
+ * This file contains all dynamic content used on the landing page.
+ * You can update video links, photos, and team member social media info here.
  */
 
-// Hero Section İçeriği
+// Hero Section Content
 export const heroContent = {
-  title: "Sağlıklı Beslenme Artık Çok Kolay",
-  subtitle: "Kişiselleştirilmiş yemek planları, AI destekli tarif önerileri ve akıllı alışveriş listeleri ile beslenme hedeflerinize ulaşın.",
+  title: "Healthy Eating Made Easy",
+  subtitle: "Achieve your nutrition goals with personalized meal plans, AI-powered recipe suggestions, and smart shopping lists.",
   appStoreUrl: "#",
   playStoreUrl: "#",
-  // Uygulamanın tanıtım videosu veya görseli
+  // Promotion video or image for the app
   heroMediaType: "image" as "video" | "image",
   heroVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
   heroImageUrl: "https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=800&q=80",
 };
 
-// Özellikler
+// Features
 export const features = [
   {
     id: "1",
     icon: "sparkles",
-    title: "AI Tarif Önerileri",
-    description: "Yapay zeka destekli kişiselleştirilmiş tarif önerileri ile damak tadınıza uygun yemekler keşfedin.",
+    title: "AI Recipe Suggestions",
+    description: "Discover meals that suit your taste with AI-powered personalized recipe recommendations.",
   },
   {
     id: "2",
     icon: "chart-bar",
-    title: "Kalori Takibi",
-    description: "Günlük kalori alımınızı kolayca takip edin ve beslenme hedeflerinize ulaşın.",
+    title: "Calorie Tracking",
+    description: "Easily track your daily calorie intake and reach your nutritional goals.",
   },
   {
     id: "3",
     icon: "shopping-cart",
-    title: "Akıllı Alışveriş Listesi",
-    description: "Yemek planlarınıza göre otomatik oluşturulan alışveriş listeleri ile zaman kazanın.",
+    title: "Smart Shopping List",
+    description: "Save time with shopping lists automatically generated based on your meal plans.",
   },
   {
     id: "4",
     icon: "calendar",
-    title: "Haftalık Planlama",
-    description: "Haftalık yemek planlarınızı önceden oluşturun ve düzenli beslenin.",
+    title: "Weekly Planning",
+    description: "Create your weekly meal plans in advance and eat regularly.",
   },
 ];
 
-// Medya Galerisi
+// Media Gallery
 export const mediaGallery = {
-  sectionTitle: "Uygulamayı Keşfedin",
+  sectionTitle: "Discover the App",
   promoVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
   screenshots: [
     {
       id: "1",
       url: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80",
-      alt: "Ana Sayfa",
+      alt: "Home Page",
     },
     {
       id: "2",
       url: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400&q=80",
-      alt: "Tarifler",
+      alt: "Recipes",
     },
     {
       id: "3",
       url: "https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=400&q=80",
-      alt: "Kalori Takibi",
+      alt: "Calorie Tracking",
     },
     {
       id: "4",
       url: "https://images.unsplash.com/photo-1547592180-85f173990554?w=400&q=80",
-      alt: "Alışveriş Listesi",
+      alt: "Shopping List",
     },
   ],
 };
 
-// Ekip Üyeleri
+// Team Members
 export const teamMembers = [
   {
     id: "1",
-    name: "İsim Soyisim",
+    name: "Yusuf Ad",
     role: "Full Stack Developer",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80",
-    linkedIn: "https://linkedin.com/in/username1",
-    github: "https://github.com/username1",
+    avatar: require("@/assets/images/team-yusuf.png"),
+    linkedIn: "https://www.linkedin.com/in/yusuf-ad",
+    github: "https://github.com/yusuf-ad",
   },
   {
     id: "2",
-    name: "İsim Soyisim",
+    name: "Yunus Mert Kök",
     role: "Mobile Developer",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
-    linkedIn: "https://linkedin.com/in/username2",
-    github: "https://github.com/username2",
+    avatar: require("@/assets/images/team-yunus.png"),
+    linkedIn: "https://www.linkedin.com/in/yunus-mert-kok",
+    github: "https://github.com/YunusKok",
   },
   {
     id: "3",
-    name: "İsim Soyisim",
+    name: "Osman İleri",
     role: "UI/UX Designer",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
-    linkedIn: "https://linkedin.com/in/username3",
-    github: "https://github.com/username3",
+    avatar: require("@/assets/images/team-osman.png"),
+    linkedIn: "https://www.linkedin.com/in/osman-ileri-944682299",
+    github: "https://github.com/Osmanileri",
   },
 ];
 
-// Footer İçeriği
+// Footer Content
 export const footerContent = {
-  copyright: `© ${new Date().getFullYear()} Planned-Eat. Tüm hakları saklıdır.`,
-  tagline: "Üniversite Bitirme Projesi",
+  copyright: `© ${new Date().getFullYear()} Planned-Eat. All rights reserved.`,
+  tagline: "University Graduation Project",
 };
 
-// Site Bilgileri
+// Site Info
 export const siteInfo = {
   name: "Planned-Eat",
-  logo: null, // Logo dosya yolu eklenebilir
+  logo: null, // Logo file path can be added
 };

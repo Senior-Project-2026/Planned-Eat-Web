@@ -3,6 +3,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
+    Easing,
     useAnimatedStyle,
     useSharedValue,
     withSpring,
@@ -40,17 +41,17 @@ export function FeatureCard({ icon, title, description, index }: FeatureCardProp
   const iconScale = useSharedValue(1);
 
   const handleHoverIn = () => {
-    translateY.value = withSpring(-8, { damping: 15, stiffness: 300 });
-    scale.value = withSpring(1.02, { damping: 15, stiffness: 300 });
-    shadowOpacity.value = withTiming(0.2, { duration: 200 });
-    iconScale.value = withSpring(1.1, { damping: 10, stiffness: 400 });
+    translateY.value = withTiming(-4, { duration: 250, easing: Easing.out(Easing.ease) });
+    scale.value = withTiming(1.01, { duration: 250, easing: Easing.out(Easing.ease) });
+    shadowOpacity.value = withTiming(0.15, { duration: 250 });
+    iconScale.value = withTiming(1.05, { duration: 250 });
   };
 
   const handleHoverOut = () => {
-    translateY.value = withSpring(0, { damping: 15, stiffness: 300 });
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-    shadowOpacity.value = withTiming(0.08, { duration: 200 });
-    iconScale.value = withSpring(1, { damping: 10, stiffness: 400 });
+    translateY.value = withTiming(0, { duration: 250, easing: Easing.out(Easing.ease) });
+    scale.value = withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) });
+    shadowOpacity.value = withTiming(0.08, { duration: 250 });
+    iconScale.value = withTiming(1, { duration: 250 });
   };
 
   const handlePressIn = () => {
@@ -81,19 +82,18 @@ export function FeatureCard({ icon, title, description, index }: FeatureCardProp
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
       })}
-      style={{ flex: 1, minWidth: isLarge ? 320 : 280 }}
+      style={{ flex: 1, minWidth: 280, maxWidth: 400 }} // Max width to prevent overly stretched cards on wide screens
     >
       <Animated.View
         style={[
           styles.card,
-          isLarge && styles.cardLarge,
           {
             backgroundColor: colors.cardBg,
             borderColor: colors.border,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowRadius: 24,
-            elevation: 8,
+            shadowColor: '#000', 
+            shadowOffset: { width: 0, height: 4 }, // Softer shadow
+            shadowRadius: 16,
+            elevation: 4,
           },
           animatedCardStyle,
         ]}
@@ -108,7 +108,7 @@ export function FeatureCard({ icon, title, description, index }: FeatureCardProp
           {description}
         </Text>
 
-        <View style={[styles.decorAccent, { backgroundColor: colors.primary, opacity: 0.1 }]} />
+        <View style={[styles.decorAccent, { backgroundColor: colors.primary, opacity: 0.05 }]} />
       </Animated.View>
     </Pressable>
   );
@@ -116,45 +116,48 @@ export function FeatureCard({ icon, title, description, index }: FeatureCardProp
 
 const styles = StyleSheet.create({
   card: {
-    padding: 28,
-    borderRadius: 24,
+    padding: 32,
+    borderRadius: 24, // Slightly reduced from 32 for cleaner look
     borderWidth: 1,
     position: 'relative',
     overflow: 'hidden',
+    alignItems: 'center', // Center content horizontally
+    height: '100%', // Match height in row
     ...(Platform.OS === 'web' && {
       cursor: 'pointer',
       transition: 'border-color 0.2s ease',
     }),
   },
-  cardLarge: {
-    // Large cards can have different styling if needed
-  },
   iconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 20,
+    width: 64,
+    height: 64,
+    borderRadius: 20, // Squircle
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   icon: {
-    fontSize: 30,
+    fontSize: 32,
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '700',
-    marginBottom: 10,
+    marginBottom: 8,
+    textAlign: 'center', // Center text
   },
   description: {
     fontSize: 15,
     lineHeight: 24,
+    textAlign: 'center', // Center text
+    opacity: 0.8,
   },
   decorAccent: {
     position: 'absolute',
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    bottom: -50,
-    right: -50,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    top: -20,
+    right: -20,
+    zIndex: -1, // Behind content
   },
 });
