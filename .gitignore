@@ -51,3 +51,14 @@ coverage/
 # editor specific
 .vscode/
 .idea/
+
+# Windows
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Misc
+*.swp
+*.bak
+*.tmp
+*.orig
