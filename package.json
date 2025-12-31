@@ -1,7 +1,7 @@
 {
   "name": "planned-eat-web",
   "main": "expo-router/entry",
-  "homepage": "https://YunusKok.github.io/Planned-Eat-Web",
+  "homepage": "https://senior-project-2026.github.io/Planned-Eat-Web",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
