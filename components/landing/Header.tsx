@@ -1,9 +1,9 @@
 import { siteInfo } from '@/constants/data';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import React, { useState } from 'react';
+import { MdExplore, MdFileDownload, MdGroup, MdHome, MdOutlineExplore, MdOutlineGroup, MdOutlineHome, MdOutlineStarBorder, MdStar } from 'react-icons/md';
 import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
   Extrapolation,
@@ -21,13 +21,14 @@ interface HeaderProps {
 }
 
 const NAV_ITEMS = [
-  { label: 'Home', id: 'hero', icon: 'home-outline', activeIcon: 'home' },
-  { label: 'Features', id: 'features', icon: 'star-outline', activeIcon: 'star' },
-  { label: 'Discover', id: 'media', icon: 'compass-outline', activeIcon: 'compass' },
-  { label: 'Team', id: 'team', icon: 'account-group-outline', activeIcon: 'account-group' },
+  { label: 'Home', id: 'hero', icon: MdOutlineHome, activeIcon: MdHome },
+  { label: 'Features', id: 'features', icon: MdOutlineStarBorder, activeIcon: MdStar },
+  { label: 'Discover', id: 'media', icon: MdOutlineExplore, activeIcon: MdExplore },
+  { label: 'Team', id: 'team', icon: MdOutlineGroup, activeIcon: MdGroup },
 ];
 
 function MobileNavItem({ item, isActive, onPress }: { item: any; isActive: boolean; onPress: () => void }) {
+  const IconComponent = isActive ? item.activeIcon : item.icon;
   // ... (keep hooks the same) ...
   const progress = useDerivedValue(() => {
     return withTiming(isActive ? 1 : 0, { duration: 300 });
@@ -57,8 +58,7 @@ function MobileNavItem({ item, isActive, onPress }: { item: any; isActive: boole
   return (
     <Pressable onPress={onPress}>
       <Animated.View style={[styles.mobileNavItem, animatedContainerStyle]}>
-        <MaterialCommunityIcons 
-          name={isActive ? item.activeIcon : item.icon} 
+        <IconComponent 
           size={22} 
           color={isActive ? '#000000' : '#888888'} 
         />
@@ -199,7 +199,7 @@ function AnimatedButton({ onPress, label, showLabel = true }: { onPress: () => v
         }
       ]}>
          {showLabel && <Text style={styles.ctaText}>{label}</Text>}
-         <MaterialIcons name="file-download" size={24} color="#FFF" />
+         <MdFileDownload size={24} color="#FFF" />
       </Animated.View>
     </Pressable>
   );
