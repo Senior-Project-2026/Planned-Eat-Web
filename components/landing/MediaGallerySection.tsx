@@ -108,7 +108,7 @@ export function MediaGallerySection() {
           </View>
         </ScrollReveal>
 
-        {/* Detail Modal */}
+    {/* Detail Modal */}
         <Modal
           visible={!!selectedScreen}
           transparent
@@ -163,10 +163,10 @@ export function MediaGallerySection() {
                          ) : (
                             <ScrollView 
                                 style={{ flex: 1, width: '100%' }}
-                                contentContainerStyle={{ paddingBottom: 40, alignItems: 'center' }}
+                                contentContainerStyle={{ paddingVertical: 40, alignItems: 'center' }}
                             >
-                                <View style={styles.modalImageWrapperMobile}>
-                                    <PhoneFrame style={{ transform: [{ scale: 0.8 }] }}>
+                                <View style={[styles.modalImageWrapperMobile, { height: 480 * Math.min(width * 0.85 / 230, 0.9) + 40 }]}>
+                                    <PhoneFrame style={{ transform: [{ scale: Math.min(width * 0.85 / 230, 0.9) }] }}>
                                         <Image
                                             source={selectedScreen.image}
                                             style={{ width: '100%', height: '100%' }}
@@ -475,11 +475,9 @@ const styles = StyleSheet.create({
   },
   modalImageWrapperMobile: {
     width: '100%',
-    height: 420,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 40,
-    marginBottom: -40, // Pull text closer since scale creates gaps
+    // Dynamic height handled inline
   },
   modalTextContainer: {
     flex: 1,
