@@ -1,7 +1,7 @@
 import { siteInfo } from '@/constants/data';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import React, { useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -21,8 +21,8 @@ interface HeaderProps {
 }
 
 const NAV_ITEMS = [
-  { label: 'Home', id: 'hero', icon: 'star-outline', activeIcon: 'star' },
-  { label: 'Features', id: 'features', icon: 'flash-outline', activeIcon: 'flash' },
+  { label: 'Home', id: 'hero', icon: 'home-outline', activeIcon: 'home-outline' },
+  { label: 'Features', id: 'features', icon: 'star-outline', activeIcon: 'star' },
   { label: 'Discover', id: 'media', icon: 'compass-outline', activeIcon: 'compass' },
   { label: 'Team', id: 'team', icon: 'people-outline', activeIcon: 'people' },
 ];
@@ -84,7 +84,7 @@ export function Header({ scrollY }: HeaderProps) {
               {/* Logo */}
               <Pressable onPress={() => scrollToSection('hero')} style={styles.logoBtn}>
                 <ExpoImage source={siteInfo.logo} style={styles.logoImage} contentFit="contain" />
-                <AnimatedNavItemText scrollY={activeScrollY} label={siteInfo.name} fontSize={18} fontWeight="800" />
+                <AnimatedNavItemText scrollY={activeScrollY} label={siteInfo.name} fontSize={18} fontWeight="800" isDark={colorScheme === 'dark'} />
               </Pressable>
               
               {/* Nav */}
@@ -92,7 +92,7 @@ export function Header({ scrollY }: HeaderProps) {
                 {NAV_ITEMS.map((item) => (
                    item.id !== 'hero' && ( // Skip Home in desktop nav list if desired, or keep it
                     <Pressable key={item.id} onPress={() => scrollToSection(item.id)} style={styles.navItem}>
-                       <AnimatedNavItemText scrollY={activeScrollY} label={item.label} />
+                       <AnimatedNavItemText scrollY={activeScrollY} label={item.label} isDark={colorScheme === 'dark'} />
                     </Pressable>
                    )
                 ))}
@@ -138,7 +138,7 @@ function MobileNavItem({ item, isActive, onPress }: { item: any; isActive: boole
     return {
       backgroundColor: interpolateColor(progress.value, [0, 1], ['transparent', '#86EFAC']), // Transparent -> Green
       flexGrow: interpolate(progress.value, [0, 1], [0, 1]), // Expand width
-      paddingHorizontal: interpolate(progress.value, [0, 1], [10, 16]),
+      paddingHorizontal: interpolate(progress.value, [0, 1], [16, 28]), // Wider sections for icons
     };
   });
 
@@ -159,20 +159,22 @@ function MobileNavItem({ item, isActive, onPress }: { item: any; isActive: boole
     return interpolateColor(progress.value, [0, 1], ['#aaaaaa', '#000000']); // Grey -> Black
   });
 
-  const animatedIconStyle = useAnimatedStyle(() => ({
-    // color: iconColor.value // Color interpolation on Ionicons text needs specific handling or just use prop
-  }));
-
   return (
     <Pressable onPress={onPress}>
       <Animated.View style={[styles.mobileNavItem, animatedContainerStyle]}>
-        <View style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}>
+        {item.id === 'hero' ? (
+          <MaterialIcons 
+            name="home" 
+            size={22} 
+            color={isActive ? '#000000' : '#888888'} 
+          />
+        ) : (
           <Ionicons 
             name={isActive ? item.activeIcon : item.icon} 
             size={20} 
             color={isActive ? '#000000' : '#888888'} 
           />
-        </View>
+        )}
         {isActive && (
            <Animated.Text style={[styles.mobileNavText, animatedTextStyle]} numberOfLines={1}>
              {item.label}
@@ -188,9 +190,9 @@ function MobileNavItem({ item, isActive, onPress }: { item: any; isActive: boole
 // Helper Components (Reused/Simplified)
 // ------------------------------------------------------------------
 
-function AnimatedNavItemText({ scrollY, label, fontSize = 14, fontWeight = '500' }: any) {
+function AnimatedNavItemText({ scrollY, label, fontSize = 14, fontWeight = '500', isDark = false }: any) {
   const style = useAnimatedStyle(() => ({
-     color: interpolateColor(scrollY.value, [0, 100], [Colors.light.text, '#000000']),
+     color: interpolateColor(scrollY.value, [0, 100], [isDark ? '#FFFFFF' : '#000000', '#000000']),
   }));
   return <Animated.Text style={[styles.navText, { fontSize, fontWeight }, style]}>{label}</Animated.Text>;
 }
