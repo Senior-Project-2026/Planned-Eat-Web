@@ -32,7 +32,7 @@ export function MediaGallerySection() {
       style={[
         styles.section, 
         { 
-          backgroundColor: colors.surface,
+          backgroundColor: 'transparent',
           paddingVertical: isDesktop ? 100 : 60, // Reduce padding on mobile
         }
       ]}
