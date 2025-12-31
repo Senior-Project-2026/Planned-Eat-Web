@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
+import { Platform } from 'react-native';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -24,9 +25,15 @@ export default function RootLayout() {
     return () => clearTimeout(timer);
   }, []);
   const [loaded] = useFonts({
-    Ionicons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
-    MaterialCommunityIcons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf'),
-    MaterialIcons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf'),
+    Ionicons: Platform.OS === 'web' 
+      ? new URL('/Planned-Eat-Web/fonts/Ionicons.ttf', 'https://senior-project-2026.github.io').toString()
+      : require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
+    MaterialCommunityIcons: Platform.OS === 'web'
+      ? new URL('/Planned-Eat-Web/fonts/MaterialCommunityIcons.ttf', 'https://senior-project-2026.github.io').toString()
+      : require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf'),
+    MaterialIcons: Platform.OS === 'web'
+      ? new URL('/Planned-Eat-Web/fonts/MaterialIcons.ttf', 'https://senior-project-2026.github.io').toString()
+      : require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf'),
   });
 
   useEffect(() => {
