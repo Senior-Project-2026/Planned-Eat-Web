@@ -1,6 +1,6 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
@@ -86,9 +86,9 @@ export function StoreButton({ type, url }: StoreButtonProps) {
         ]}
       >
         <View style={styles.content}>
-          <Ionicons 
-            name={isApple ? "logo-apple" : "logo-google-playstore"} 
-            size={28} 
+          <MaterialCommunityIcons 
+            name={isApple ? "apple" : "google-play"} 
+            size={30} 
             color={textColor} 
           />
           <View style={styles.textContainer}>
@@ -107,10 +107,14 @@ export function StoreButton({ type, url }: StoreButtonProps) {
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 14,
-    paddingHorizontal: 28,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 16,
-    minWidth: 170,
+    width: 190,
+    height: 64,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
     ...(Platform.OS === 'web' && {
       cursor: 'pointer',
     }),
@@ -118,22 +122,30 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: 12, // Reduced slightly
   },
   icon: {
-    fontSize: 30,
+    // fontSize removed, controlled via props
   },
   textContainer: {
     flexDirection: 'column',
+    justifyContent: 'center',
   },
   subtitle: {
-    fontSize: 11,
-    fontWeight: '400',
+    fontSize: 10,
+    fontWeight: '500', // Slightly bolder for visibility
     opacity: 0.9,
+    lineHeight: 12, // Tight line height
+    marginBottom: 2, // Small gap
+    textTransform: 'uppercase', // Maybe unify casing? No, keep standard. "GET IT ON" is usually caps.
+    // Actually, App Store "Download on the" is usually Mixed Case. Google "GET IT ON" is Caps.
+    // Let's keep content logic, just fix spacing.
+    letterSpacing: 0.5,
   },
   title: {
     fontSize: 20,
-    fontWeight: '600',
-    marginTop: 2,
+    fontWeight: '700', // Bolder
+    marginTop: 0,
+    lineHeight: 22,
   },
 });

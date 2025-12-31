@@ -1,7 +1,7 @@
 import { siteInfo } from '@/constants/data';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Image as ExpoImage } from 'expo-image';
 import React, { useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -21,11 +21,56 @@ interface HeaderProps {
 }
 
 const NAV_ITEMS = [
-  { label: 'Home', id: 'hero', icon: 'home-outline', activeIcon: 'home-outline' },
+  { label: 'Home', id: 'hero', icon: 'home-outline', activeIcon: 'home' },
   { label: 'Features', id: 'features', icon: 'star-outline', activeIcon: 'star' },
   { label: 'Discover', id: 'media', icon: 'compass-outline', activeIcon: 'compass' },
-  { label: 'Team', id: 'team', icon: 'people-outline', activeIcon: 'people' },
+  { label: 'Team', id: 'team', icon: 'account-group-outline', activeIcon: 'account-group' },
 ];
+
+function MobileNavItem({ item, isActive, onPress }: { item: any; isActive: boolean; onPress: () => void }) {
+  // ... (keep hooks the same) ...
+  const progress = useDerivedValue(() => {
+    return withTiming(isActive ? 1 : 0, { duration: 300 });
+  });
+
+  const animatedContainerStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: interpolateColor(progress.value, [0, 1], ['transparent', '#86EFAC']), // Transparent -> Green
+      flexGrow: interpolate(progress.value, [0, 1], [0, 1]), // Expand width
+      paddingHorizontal: interpolate(progress.value, [0, 1], [16, 28]), // Wider sections for icons
+    };
+  });
+
+  const animatedTextStyle = useAnimatedStyle(() => {
+    return {
+      opacity: progress.value,
+      transform: [
+        { translateX: interpolate(progress.value, [0, 1], [10, 0]) }, // Slide in
+        { scale: progress.value } 
+      ],
+      // Hide completely when inactive to prevent layout shift artifacts
+      width: isActive ? 'auto' : 0,
+      height: isActive ? 'auto' : 0,
+    };
+  });
+
+  return (
+    <Pressable onPress={onPress}>
+      <Animated.View style={[styles.mobileNavItem, animatedContainerStyle]}>
+        <MaterialCommunityIcons 
+          name={isActive ? item.activeIcon : item.icon} 
+          size={22} 
+          color={isActive ? '#000000' : '#888888'} 
+        />
+        {isActive && (
+           <Animated.Text style={[styles.mobileNavText, animatedTextStyle]} numberOfLines={1}>
+             {item.label}
+           </Animated.Text>
+        )}
+      </Animated.View>
+    </Pressable>
+  );
+}
 
 export function Header({ scrollY }: HeaderProps) {
   const colorScheme = useColorScheme() ?? 'light';
@@ -125,65 +170,7 @@ export function Header({ scrollY }: HeaderProps) {
   );
 }
 
-// ------------------------------------------------------------------
-// Mobile Nav Item Component (The Exploding Tab)
-// ------------------------------------------------------------------
-function MobileNavItem({ item, isActive, onPress }: { item: any; isActive: boolean; onPress: () => void }) {
-  // Shared value for animation state
-  const progress = useDerivedValue(() => {
-    return withTiming(isActive ? 1 : 0, { duration: 250 });
-  });
 
-  const animatedContainerStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: interpolateColor(progress.value, [0, 1], ['transparent', '#86EFAC']), // Transparent -> Green
-      flexGrow: interpolate(progress.value, [0, 1], [0, 1]), // Expand width
-      paddingHorizontal: interpolate(progress.value, [0, 1], [16, 28]), // Wider sections for icons
-    };
-  });
-
-  const animatedTextStyle = useAnimatedStyle(() => {
-    return {
-      opacity: progress.value,
-      transform: [
-        { translateX: interpolate(progress.value, [0, 1], [10, 0]) }, // Slide in
-        { scale: progress.value } 
-      ],
-      // Hide completely when inactive to prevent layout shift artifacts
-      width: isActive ? 'auto' : 0,
-      height: isActive ? 'auto' : 0,
-    };
-  });
-
-  const iconColor = useDerivedValue(() => {
-    return interpolateColor(progress.value, [0, 1], ['#aaaaaa', '#000000']); // Grey -> Black
-  });
-
-  return (
-    <Pressable onPress={onPress}>
-      <Animated.View style={[styles.mobileNavItem, animatedContainerStyle]}>
-        {item.id === 'hero' ? (
-          <MaterialIcons 
-            name="home" 
-            size={22} 
-            color={isActive ? '#000000' : '#888888'} 
-          />
-        ) : (
-          <Ionicons 
-            name={isActive ? item.activeIcon : item.icon} 
-            size={20} 
-            color={isActive ? '#000000' : '#888888'} 
-          />
-        )}
-        {isActive && (
-           <Animated.Text style={[styles.mobileNavText, animatedTextStyle]} numberOfLines={1}>
-             {item.label}
-           </Animated.Text>
-        )}
-      </Animated.View>
-    </Pressable>
-  );
-}
 
 
 // ------------------------------------------------------------------
@@ -212,7 +199,7 @@ function AnimatedButton({ onPress, label, showLabel = true }: { onPress: () => v
         }
       ]}>
          {showLabel && <Text style={styles.ctaText}>{label}</Text>}
-         <Ionicons name="arrow-down-circle" size={24} color="#FFF" />
+         <MaterialIcons name="file-download" size={24} color="#FFF" />
       </Animated.View>
     </Pressable>
   );
