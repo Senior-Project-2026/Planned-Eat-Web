@@ -2,7 +2,7 @@ import { siteInfo } from '@/constants/data';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Image as ExpoImage } from 'expo-image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MdExplore, MdFileDownload, MdGroup, MdHome, MdOutlineExplore, MdOutlineGroup, MdOutlineHome, MdOutlineStarBorder, MdStar } from 'react-icons/md';
 import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
@@ -90,6 +90,35 @@ export function Header({ scrollY }: HeaderProps) {
     }
   };
 
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveTab(entry.target.id);
+          }
+        });
+      },
+      {
+        root: null,
+        // Trigger when the element is crossing the "visual center-top" area of the screen
+        // -40% from top, -40% from bottom means we look at the middle 20%
+        // Adjusting to -30% (top) and -50% (bottom) to favor "top-ish" elements
+        rootMargin: '-30% 0px -50% 0px', 
+        threshold: 0, 
+      }
+    );
+
+    NAV_ITEMS.forEach((item) => {
+      const element = document.getElementById(item.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   // Header background animation
   const animatedHeaderStyle = useAnimatedStyle(() => {
     const scrollValue = activeScrollY.value;
@@ -115,6 +144,33 @@ export function Header({ scrollY }: HeaderProps) {
       shadowOpacity,
       shadowRadius: 20,
       shadowColor: '#86EFAC',
+    };
+  });
+
+  // Mobile Header Transition
+  const mobileTransition = useDerivedValue(() => {
+    return interpolate(activeScrollY.value, [0, 50], [0, 1], Extrapolation.CLAMP);
+  });
+
+  const mobileLogoStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(mobileTransition.value, [0, 0.5], [1, 0]),
+      transform: [
+        { translateY: interpolate(mobileTransition.value, [0, 1], [0, -20]) },
+        { scale: interpolate(mobileTransition.value, [0, 1], [1, 0.9]) }
+      ],
+      zIndex: mobileTransition.value < 0.5 ? 10 : 0, // Ensure clickable when visible
+    };
+  });
+
+  const mobileNavPillStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(mobileTransition.value, [0.5, 1], [0, 1]),
+      transform: [
+        { translateY: interpolate(mobileTransition.value, [0, 1], [20, 0]) },
+        { scale: interpolate(mobileTransition.value, [0, 1], [0.9, 1]) }
+      ],
+      zIndex: mobileTransition.value > 0.5 ? 10 : 0,
     };
   });
 
@@ -145,16 +201,41 @@ export function Header({ scrollY }: HeaderProps) {
             </View>
           </Animated.View>
         ) : (
-          /* ================= MOBILE LAYOUT (The Exploding Pill) ================= */
-          <View style={[styles.mobilePillContainer, { marginRight: 8 }]}>
-            {NAV_ITEMS.map((item) => (
-              <MobileNavItem 
-                key={item.id}
-                item={item}
-                isActive={activeTab === item.id}
-                onPress={() => scrollToSection(item.id)}
-              />
-            ))}
+          /* ================= MOBILE LAYOUT (Hybrid) ================= */
+          <View style={{ marginRight: 8, height: 56, justifyContent: 'center' }}>
+             {/* 1. Top State: Logo + Name (Absolute to overlap) */}
+             <Animated.View style={[styles.mobileLogoContainer, mobileLogoStyle, { position: 'absolute', left: 0 }]}>
+                <Pressable onPress={() => scrollToSection('hero')} style={styles.logoBtn}>
+                  <ExpoImage source={siteInfo.logo} style={styles.logoImage} contentFit="contain" />
+                  <Text style={[styles.navText, { fontSize: 18, fontWeight: '800', color: colorScheme === 'dark' ? '#FFF' : '#000' }]}>
+                    {siteInfo.name}
+                  </Text>
+                </Pressable>
+
+                 {/* Section Icons for Mobile Top View */}
+                 <View style={{ flexDirection: 'row', gap: 12, marginLeft: 16, alignItems: 'center' }}>
+                    {NAV_ITEMS.map((item) => {
+                       const Icon = item.icon;
+                       return (
+                         <Pressable key={item.id} onPress={() => scrollToSection(item.id)}>
+                            <Icon size={20} color={colorScheme === 'dark' ? '#FFF' : '#000'} />
+                         </Pressable>
+                       );
+                    })}
+                </View>
+             </Animated.View>
+
+             {/* 2. Scroll State: Nav Pill */}
+             <Animated.View style={[styles.mobilePillContainer, mobileNavPillStyle]}>
+                {NAV_ITEMS.map((item) => (
+                  <MobileNavItem 
+                    key={item.id}
+                    item={item}
+                    isActive={activeTab === item.id}
+                    onPress={() => scrollToSection(item.id)}
+                  />
+                ))}
+             </Animated.View>
           </View>
         )}
 
@@ -169,9 +250,6 @@ export function Header({ scrollY }: HeaderProps) {
     </View>
   );
 }
-
-
-
 
 // ------------------------------------------------------------------
 // Helper Components (Reused/Simplified)
@@ -247,11 +325,20 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     padding: 6,
     height: 56, // Fixed height for mobile nav
+    minWidth: 200, // Ensure it has some width for the icons
     gap: 4,
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowRadius: 10,
     elevation: 8,
+  },
+  mobileLogoContainer: {
+    height: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    backgroundColor: 'transparent',
+    borderRadius: 28,
   },
   mobileNavItem: {
     flexDirection: 'row',
