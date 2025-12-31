@@ -1,6 +1,6 @@
 # 🥗 Planned-Eat Web
 
-Modern, responsive, and animated landing page for the **Planned-Eat** mobile application. developed as a university graduation project.
+Modern, responsive, and animated landing page for the **[Planned-Eat Mobile Application](https://github.com/Senior-Project-2026/planned-eat)**, developed as a university graduation project.
 
 This project serves as the official web presence for Planned-Eat, an AI-powered meal planning and nutrition assistant.
 
@@ -14,7 +14,7 @@ Designed with **React Native Web**, it delivers a seamless, native-like experien
 
 ### ✨ Key Features
 
-- **Dynamic Morphing Header**: A unique header that transforms from a transparent bar to a floating, interactive pill with bubble details upon scrolling.
+- **Hybrid Mobile Navigation**: A smart header implementation that toggles between a branded "App Mode" (Logo + Name + Actions) and "Navigation Mode" (Icon Pill) based on scroll behavior, maximizing screen real estate while maintaining brand visibility.
 - **Glassmorphism & Glow Effects**: Modern UI trends including background blurs, deep charcoal themes, and vibrant accent glows (Priot.io inspired).
 - **Interactive Cards**: Feature and Team cards with smooth, physics-based hover animations.
 - **Responsive Layout**: A "Write Once, Run Everywhere" codebase that adapts perfectly to any screen size.

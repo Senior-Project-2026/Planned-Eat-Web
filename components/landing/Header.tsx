@@ -2,7 +2,7 @@ import { siteInfo } from '@/constants/data';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Image as ExpoImage } from 'expo-image';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MdExplore, MdFileDownload, MdGroup, MdHome, MdOutlineExplore, MdOutlineGroup, MdOutlineHome, MdOutlineStarBorder, MdStar } from 'react-icons/md';
 import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
@@ -82,11 +82,28 @@ export function Header({ scrollY }: HeaderProps) {
   const activeScrollY = scrollY ?? localScrollY;
   const [activeTab, setActiveTab] = useState('hero');
 
+  const isManualScroll = useRef(false);
+  const scrollTimeout = useRef<any>(null);
+
   const scrollToSection = (sectionId: string) => {
     setActiveTab(sectionId);
+    isManualScroll.current = true;
+    
+    // Clear existing timeout
+    if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+    
+    // Reset lock after animation
+    scrollTimeout.current = setTimeout(() => {
+        isManualScroll.current = false;
+    }, 1000);
+
     if (Platform.OS === 'web') {
       const element = document.getElementById(sectionId);
-      element?.scrollIntoView({ behavior: 'smooth' });
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        console.warn(`Section with id "${sectionId}" not found`);
+      }
     }
   };
 
@@ -95,6 +112,8 @@ export function Header({ scrollY }: HeaderProps) {
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (isManualScroll.current) return; // Skip updates if scrolling manually
+
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveTab(entry.target.id);
@@ -103,10 +122,7 @@ export function Header({ scrollY }: HeaderProps) {
       },
       {
         root: null,
-        // Trigger when the element is crossing the "visual center-top" area of the screen
-        // -40% from top, -40% from bottom means we look at the middle 20%
-        // Adjusting to -30% (top) and -50% (bottom) to favor "top-ish" elements
-        rootMargin: '-30% 0px -50% 0px', 
+        rootMargin: '-40% 0px -40% 0px', // Tighter detection zone (middle 20% of screen)
         threshold: 0, 
       }
     );
