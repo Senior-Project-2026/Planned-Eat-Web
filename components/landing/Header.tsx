@@ -176,24 +176,28 @@ export function Header({ scrollY }: HeaderProps) {
   });
 
   const mobileLogoStyle = useAnimatedStyle(() => {
+    const isVisible = mobileTransition.value < 0.5;
     return {
       opacity: interpolate(mobileTransition.value, [0, 0.5], [1, 0]),
       transform: [
         { translateY: interpolate(mobileTransition.value, [0, 1], [0, -20]) },
         { scale: interpolate(mobileTransition.value, [0, 1], [1, 0.9]) }
       ],
-      zIndex: mobileTransition.value < 0.5 ? 10 : 0, // Ensure clickable when visible
+      zIndex: isVisible ? 10 : 0,
+      pointerEvents: isVisible ? 'auto' : 'none', // Fix for Android touch
     };
   });
 
   const mobileNavPillStyle = useAnimatedStyle(() => {
+    const isVisible = mobileTransition.value > 0.5;
     return {
       opacity: interpolate(mobileTransition.value, [0.5, 1], [0, 1]),
       transform: [
         { translateY: interpolate(mobileTransition.value, [0, 1], [20, 0]) },
         { scale: interpolate(mobileTransition.value, [0, 1], [0.9, 1]) }
       ],
-      zIndex: mobileTransition.value > 0.5 ? 10 : 0,
+      zIndex: isVisible ? 10 : 0,
+      pointerEvents: isVisible ? 'auto' : 'none', // Fix for Android touch
     };
   });
 
@@ -201,8 +205,11 @@ export function Header({ scrollY }: HeaderProps) {
     <View 
       style={[
         styles.headerWrapper, 
-        // Mobile needs full height for top/bottom positioning
-        !isDesktop && { top: 0, bottom: 0, height: '100%' } 
+        // Mobile: use 100dvh for Android Chrome compatibility
+        !isDesktop && { 
+          top: 0, 
+          height: Platform.OS === 'web' ? '100dvh' as any : '100%',
+        } 
       ]} 
       pointerEvents="box-none"
     >
