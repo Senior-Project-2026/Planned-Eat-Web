@@ -139,12 +139,11 @@ export function Header({ scrollY }: HeaderProps) {
   const animatedHeaderStyle = useAnimatedStyle(() => {
     const scrollValue = activeScrollY.value;
     
-    // Desktop: Move down (+24)
-    // Mobile: Move up (-24) to float from bottom
+    // Desktop: Move down (+24) - ONLY for Desktop
     const translateY = interpolate(
       scrollValue, 
       [0, 100], 
-      [0, isDesktop ? 24 : -24], 
+      [0, isDesktop ? 24 : 0], 
       Extrapolation.CLAMP
     );
     
@@ -250,17 +249,20 @@ export function Header({ scrollY }: HeaderProps) {
                 { 
                   position: 'absolute', 
                   top: 24, 
-                  justifyContent: 'space-between',
-                  paddingHorizontal: 48, // Increased padding to 48px
+                  justifyContent: 'center',
+                  paddingHorizontal: 16,
                   width: '100%',
-                  alignItems: 'center', // Ensure everything is vertically centered
+                  alignItems: 'center',
                 }
               ]}
             >
-               {/* Content Container (Logo + Name + Icons) */}
-               <Animated.View style={[styles.mobileLogoContainer, { paddingHorizontal: 0, marginRight: 8, maxWidth: '80%', alignItems: 'center' }]}>
+               {/* Content Container (Logo + Name + Icons + Download) - Centered */}
+               <View style={{ 
+                  flexDirection: 'row', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+               }}>
                   <Pressable onPress={() => scrollToSection('hero')} style={[styles.logoBtn, { height: 48, alignItems: 'center' }]}>
-                    {/* Enlarge Logo */}
                     <ExpoImage source={siteInfo.logo} style={{ width: 40, height: 40 }} contentFit="contain" />
                     <Text 
                       style={[
@@ -269,8 +271,7 @@ export function Header({ scrollY }: HeaderProps) {
                           fontSize: 18, 
                           fontWeight: '800', 
                           color: colorScheme === 'dark' ? '#FFF' : '#000',
-                          // Only hide on extremely small devices
-                          display: width < 300 ? 'none' : 'flex' 
+                          flexShrink: 0,
                         }
                       ]}
                       numberOfLines={1}
@@ -285,21 +286,22 @@ export function Header({ scrollY }: HeaderProps) {
                          const Icon = item.icon;
                          return (
                            <Pressable key={item.id} onPress={() => scrollToSection(item.id)} hitSlop={8}>
-                              {/* Enlarge Icons */}
                               <Icon size={24} color={colorScheme === 'dark' ? '#FFF' : '#000'} />
                            </Pressable>
                          );
                       })}
                   </View>
-               </Animated.View>
 
-               {/* Top Button - Resized to 48px */}
-               <AnimatedButton 
-                 onPress={() => scrollToSection('hero')} 
-                 label="Get App" 
-                 showLabel={false}
-                 fixedSize={48}
-               />
+                  {/* Download Button - Now inside the centered group */}
+                  <View style={{ marginLeft: 12 }}>
+                    <AnimatedButton 
+                      onPress={() => scrollToSection('hero')} 
+                      label="Get App" 
+                      showLabel={false}
+                      fixedSize={48}
+                    />
+                  </View>
+               </View>
             </Animated.View>
 
             {/* 2. Bottom State: Nav Pill + Large Button */}
@@ -395,6 +397,12 @@ const styles = StyleSheet.create({
   headerWrapper: {
     position: 'fixed' as any,
     left: 0, right: 0, zIndex: 100,
+    // Android Chrome fix: prevents jumping when address bar hides/shows
+    ...(Platform.OS === 'web' && {
+      transform: 'translateZ(0)',
+      backfaceVisibility: 'hidden',
+      willChange: 'transform',
+    }),
   },
   floatingRow: {
      flexDirection: 'row',
