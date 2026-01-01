@@ -138,7 +138,15 @@ export function Header({ scrollY }: HeaderProps) {
   // Header background animation
   const animatedHeaderStyle = useAnimatedStyle(() => {
     const scrollValue = activeScrollY.value;
-    const translateY = interpolate(scrollValue, [0, 100], [0, 24], Extrapolation.CLAMP);
+    
+    // Desktop: Move down (+24)
+    // Mobile: Move up (-24) to float from bottom
+    const translateY = interpolate(
+      scrollValue, 
+      [0, 100], 
+      [0, isDesktop ? 24 : -24], 
+      Extrapolation.CLAMP
+    );
     
     return {
       transform: [{ translateY }],
@@ -191,78 +199,142 @@ export function Header({ scrollY }: HeaderProps) {
   });
 
   return (
-    <View style={styles.headerWrapper} pointerEvents="box-none">
-      <Animated.View style={[styles.floatingRow, animatedHeaderStyle]}>
+    <View 
+      style={[
+        styles.headerWrapper, 
+        // Mobile needs full height for top/bottom positioning
+        !isDesktop && { top: 0, bottom: 0, height: '100%' } 
+      ]} 
+      pointerEvents="box-none"
+    >
         
         {isDesktop ? (
-          /* ================= DESKTOP LAYOUT ================= */
-          <Animated.View style={[styles.pillContainerBase, animatedDesktopPillStyle, { marginRight: 12 }]}>
-            <View style={styles.contentContainer}>
-              {/* Logo */}
-              <Pressable onPress={() => scrollToSection('hero')} style={styles.logoBtn}>
-                <ExpoImage source={siteInfo.logo} style={styles.logoImage} contentFit="contain" />
-                <AnimatedNavItemText scrollY={activeScrollY} label={siteInfo.name} fontSize={18} fontWeight="800" isDark={colorScheme === 'dark'} />
-              </Pressable>
-              
-              {/* Nav */}
-              <View style={styles.nav}>
-                {NAV_ITEMS.map((item) => (
-                   item.id !== 'hero' && ( // Skip Home in desktop nav list if desired, or keep it
-                    <Pressable key={item.id} onPress={() => scrollToSection(item.id)} style={styles.navItem}>
-                       <AnimatedNavItemText scrollY={activeScrollY} label={item.label} isDark={colorScheme === 'dark'} />
-                    </Pressable>
-                   )
-                ))}
-              </View>
-            </View>
-          </Animated.View>
-        ) : (
-          /* ================= MOBILE LAYOUT (Hybrid) ================= */
-          <View style={{ marginRight: 8, height: 56, justifyContent: 'center' }}>
-             {/* 1. Top State: Logo + Name (Absolute to overlap) */}
-             <Animated.View style={[styles.mobileLogoContainer, mobileLogoStyle, { position: 'absolute', left: 0 }]}>
+          /* ================= DESKTOP LAYOUT (Top Floating) ================= */
+          <Animated.View style={[styles.floatingRow, { marginTop: 24 }, animatedHeaderStyle]}>
+            <Animated.View style={[styles.pillContainerBase, animatedDesktopPillStyle, { marginRight: 12 }]}>
+              <View style={styles.contentContainer}>
+                {/* Logo */}
                 <Pressable onPress={() => scrollToSection('hero')} style={styles.logoBtn}>
                   <ExpoImage source={siteInfo.logo} style={styles.logoImage} contentFit="contain" />
-                  <Text style={[styles.navText, { fontSize: 18, fontWeight: '800', color: colorScheme === 'dark' ? '#FFF' : '#000' }]}>
-                    {siteInfo.name}
-                  </Text>
+                  <AnimatedNavItemText scrollY={activeScrollY} label={siteInfo.name} fontSize={18} fontWeight="800" isDark={colorScheme === 'dark'} />
                 </Pressable>
-
-                 {/* Section Icons for Mobile Top View */}
-                 <View style={{ flexDirection: 'row', gap: 12, marginLeft: 16, alignItems: 'center' }}>
-                    {NAV_ITEMS.map((item) => {
-                       const Icon = item.icon;
-                       return (
-                         <Pressable key={item.id} onPress={() => scrollToSection(item.id)}>
-                            <Icon size={20} color={colorScheme === 'dark' ? '#FFF' : '#000'} />
-                         </Pressable>
-                       );
-                    })}
+                
+                {/* Nav */}
+                <View style={styles.nav}>
+                  {NAV_ITEMS.map((item) => (
+                    item.id !== 'hero' && (
+                      <Pressable key={item.id} onPress={() => scrollToSection(item.id)} style={styles.navItem}>
+                        <AnimatedNavItemText scrollY={activeScrollY} label={item.label} isDark={colorScheme === 'dark'} />
+                      </Pressable>
+                    )
+                  ))}
                 </View>
-             </Animated.View>
+              </View>
+            </Animated.View>
 
-             {/* 2. Scroll State: Nav Pill */}
-             <Animated.View style={[styles.mobilePillContainer, mobileNavPillStyle]}>
-                {NAV_ITEMS.map((item) => (
-                  <MobileNavItem 
-                    key={item.id}
-                    item={item}
-                    isActive={activeTab === item.id}
-                    onPress={() => scrollToSection(item.id)}
-                  />
-                ))}
-             </Animated.View>
-          </View>
+            {/* Desktop Download Button */}
+            <AnimatedButton 
+              onPress={() => scrollToSection('hero')} 
+              label="Get App" 
+              showLabel={true}
+            />
+          </Animated.View>
+        ) : (
+          /* ================= MOBILE LAYOUT (Split Top/Bottom) ================= */
+          <>
+            {/* 1. Top State: Logo + Name + Icons + Large Button */}
+            <Animated.View 
+              style={[
+                styles.floatingRow, 
+                mobileLogoStyle, 
+                { 
+                  position: 'absolute', 
+                  top: 24, 
+                  justifyContent: 'space-between',
+                  paddingHorizontal: 48, // Increased padding to 48px
+                  width: '100%',
+                  alignItems: 'center', // Ensure everything is vertically centered
+                }
+              ]}
+            >
+               {/* Content Container (Logo + Name + Icons) */}
+               <Animated.View style={[styles.mobileLogoContainer, { paddingHorizontal: 0, marginRight: 8, maxWidth: '80%', alignItems: 'center' }]}>
+                  <Pressable onPress={() => scrollToSection('hero')} style={[styles.logoBtn, { height: 48, alignItems: 'center' }]}>
+                    {/* Enlarge Logo */}
+                    <ExpoImage source={siteInfo.logo} style={{ width: 40, height: 40 }} contentFit="contain" />
+                    <Text 
+                      style={[
+                        styles.navText, 
+                        { 
+                          fontSize: 18, // Increase font size slightly
+                          fontWeight: '800', 
+                          color: colorScheme === 'dark' ? '#FFF' : '#000',
+                          display: width < 400 ? 'none' : 'flex' // Hide name on smaller screens to make room for large content
+                        }
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {siteInfo.name}
+                    </Text>
+                  </Pressable>
+
+                   {/* Section Icons for Mobile Top View */}
+                   <View style={{ flexDirection: 'row', gap: 12, marginLeft: 12, alignItems: 'center', flexShrink: 0 }}>
+                      {NAV_ITEMS.map((item) => {
+                         const Icon = item.icon;
+                         return (
+                           <Pressable key={item.id} onPress={() => scrollToSection(item.id)} hitSlop={8}>
+                              {/* Enlarge Icons */}
+                              <Icon size={24} color={colorScheme === 'dark' ? '#FFF' : '#000'} />
+                           </Pressable>
+                         );
+                      })}
+                  </View>
+               </Animated.View>
+
+               {/* Top Button - Resized to 48px */}
+               <AnimatedButton 
+                 onPress={() => scrollToSection('hero')} 
+                 label="Get App" 
+                 showLabel={false}
+                 fixedSize={48}
+               />
+            </Animated.View>
+
+            {/* 2. Bottom State: Nav Pill + Large Button */}
+            <Animated.View 
+              style={[
+                styles.floatingRow, 
+                mobileNavPillStyle,
+                { 
+                   position: 'absolute', 
+                   bottom: 24,
+                   gap: 8,
+                   justifyContent: 'center'
+                }
+              ]}
+            >
+               <View style={styles.mobilePillContainer}>
+                  {NAV_ITEMS.map((item) => (
+                    <MobileNavItem 
+                      key={item.id}
+                      item={item}
+                      isActive={activeTab === item.id}
+                      onPress={() => scrollToSection(item.id)}
+                    />
+                  ))}
+               </View>
+
+               {/* Large Bottom Button */}
+               <AnimatedButton 
+                 onPress={() => scrollToSection('hero')} 
+                 label="Get App" 
+                 showLabel={false}
+                 fixedSize={56}
+               />
+            </Animated.View>
+          </>
         )}
-
-        {/* Download Button (Always Visible) */}
-        <AnimatedButton 
-          onPress={() => scrollToSection('hero')} 
-          label="Get App" 
-          showLabel={isDesktop}
-        />
-
-      </Animated.View>
     </View>
   );
 }
@@ -278,22 +350,40 @@ function AnimatedNavItemText({ scrollY, label, fontSize = 14, fontWeight = '500'
   return <Animated.Text style={[styles.navText, { fontSize, fontWeight }, style]}>{label}</Animated.Text>;
 }
 
-function AnimatedButton({ onPress, label, showLabel = true }: { onPress: () => void; label: string; showLabel?: boolean }) {
+interface AnimatedButtonProps {
+  onPress: () => void;
+  label: string;
+  showLabel?: boolean;
+  fixedSize?: number; // Optional fixed size for mobile buttons
+}
+
+function AnimatedButton({ onPress, label, showLabel = true, fixedSize }: AnimatedButtonProps) {
   const scale = useSharedValue(1);
+
+  const buttonStyle: any = {
+    height: fixedSize ?? 56,
+    width: showLabel ? 'auto' : (fixedSize ?? 56),
+    paddingHorizontal: showLabel ? 20 : 0,
+    borderRadius: 100, // Ensure circle when square
+  };
+
+  const iconScale = fixedSize ? (fixedSize / 56) : 1;
+
   return (
     <Pressable onPress={onPress} onPressIn={() => scale.value=0.95} onPressOut={() => scale.value=1}>
       <Animated.View style={[
         styles.ctaButton, 
+        buttonStyle,
         { 
           transform: [{scale}],
-          paddingHorizontal: showLabel ? 20 : 0, 
-          width: showLabel ? 'auto' : 56, 
           justifyContent: 'center',
           gap: showLabel ? 8 : 0
         }
       ]}>
          {showLabel && <Text style={styles.ctaText}>{label}</Text>}
-         <MdFileDownload size={24} color="#FFF" />
+         <View style={{ transform: [{ scale: iconScale }] }}>
+            <MdFileDownload size={24} color="#FFF" />
+         </View>
       </Animated.View>
     </Pressable>
   );
@@ -303,13 +393,12 @@ function AnimatedButton({ onPress, label, showLabel = true }: { onPress: () => v
 const styles = StyleSheet.create({
   headerWrapper: {
     position: 'fixed' as any,
-    top: 0, left: 0, right: 0, zIndex: 100,
+    left: 0, right: 0, zIndex: 100,
   },
   floatingRow: {
      flexDirection: 'row',
      alignItems: 'center',
      justifyContent: 'center',
-     marginTop: 24,
      width: '100%',
      maxWidth: 1200,
      marginHorizontal: 'auto',
